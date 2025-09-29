@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>루트 도메인 별 정렬기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      font-size: 1.2em;
+      color: #007bff;
+      margin-top: 20px;
+      margin-bottom: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 250px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: monospace;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: #3f51b5;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #303f9f;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>루트 도메인 별 정렬기</h1>
+    <p>아래 텍스트 상자에 도메인 목록을 입력하거나 붙여넣으세요. 중복을 자동으로 제거하고 루트 도메인 별로 그룹화합니다.</p>
+    <textarea id="domainInput" placeholder="예시:
+sub1.example.com
+sub2.example.com
+another.domain.net"></textarea>
+    <button onclick="sortAndGroupDomains()">루트 도메인 별로 정렬하기</button>
+    <p class="note">정렬된 목록은 입력 상자에 다시 표시됩니다.</p>
+  </div>
+
+  <script>
+    function getRootDomain(domain) {
+      const parts = domain.split('.');
+      const len = parts.length;
+      // .co.kr, .com.au 등 예외를 고려한 로직
+      if (len > 2) {
+        const lastTwo = parts.slice(len - 2).join('.');
+        if (['co.kr', 'com.au', 'co.uk', 'go.kr', 'or.kr'].includes(lastTwo)) {
+          return parts.slice(len - 3).join('.');
+        }
+      }
+      return parts.slice(len - 2).join('.');
+    }
+
+    function sortAndGroupDomains() {
+      const domainInput = document.getElementById('domainInput');
+      let domains = domainInput.value.split('\n');
+
+      // 공백 제거 및 빈 줄 필터링
+      domains = domains.map(domain => domain.trim()).filter(domain => domain !== '');
+
+      // 중복 제거
+      const uniqueDomains = new Set(domains);
+
+      // 루트 도메인 별로 그룹화
+      const groupedDomains = {};
+      uniqueDomains.forEach(domain => {
+        const root = getRootDomain(domain);
+        if (!groupedDomains[root]) {
+          groupedDomains[root] = [];
+        }
+        groupedDomains[root].push(domain);
+      });
+
+      // 그룹(루트 도메인)을 알파벳 순으로 정렬
+      const sortedRoots = Object.keys(groupedDomains).sort();
+
+      // 각 그룹 내의 도메인들을 알파벳 순으로 정렬
+      let output = '';
+      sortedRoots.forEach(root => {
+        groupedDomains[root].sort();
+        output += groupedDomains[root].join('\n') + '\n\n';
+      });
+
+      // 마지막 줄바꿈 제거
+      domainInput.value = output.trim();
+    }
+  </script>
+
+</body>
+
+</html>

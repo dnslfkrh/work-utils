@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도메인 중복 제거기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: monospace;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>도메인 중복 제거기</h1>
+    <p>아래 텍스트 상자에 도메인 목록을 입력하거나 붙여넣으세요.</p>
+    <textarea id="domainInput" placeholder="예시:
+google.com
+naver.com
+google.com"></textarea>
+    <button onclick="removeDuplicates()">중복 제거하기</button>
+    <p class="note">중복이 제거된 도메인 목록은 입력 상자에 다시 표시됩니다.</p>
+  </div>
+
+  <script>
+    function removeDuplicates() {
+      const domainInput = document.getElementById('domainInput');
+      let domains = domainInput.value.split('\n');
+
+      // 공백 제거 및 빈 줄 필터링
+      domains = domains.map(domain => domain.trim()).filter(domain => domain !== '');
+
+      // Set을 사용하여 중복 제거
+      const uniqueDomains = new Set(domains);
+
+      // 결과를 다시 배열로 변환
+      const uniqueDomainsArray = Array.from(uniqueDomains);
+
+      // (선택 사항) 중복 제거 후 정렬
+      uniqueDomainsArray.sort();
+
+      // 결과를 텍스트 상자에 다시 표시
+      domainInput.value = uniqueDomainsArray.join('\n');
+    }
+  </script>
+
+</body>
+
+</html>

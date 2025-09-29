@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>MAC 주소 실시간 변환기</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    #inputArea,
+    #outputArea {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      resize: none;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .box {
+      flex: 1;
+      padding: 15px;
+      border-radius: 12px;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .box h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .box .content {
+      font-family: monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 8px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .colon {
+      border-left: 5px solid #4CAF50;
+    }
+
+    .no-colon {
+      border-left: 5px solid #f44336;
+    }
+
+    button.copyBtn {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    button.copyBtn:hover {
+      background-color: #115293;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="inputArea">
+    <h2>MAC 주소 입력</h2>
+    <textarea id="macInput" placeholder="여기에 MAC 주소 입력"></textarea>
+  </div>
+
+  <div id="outputArea">
+    <div class="box colon">
+      <h3>
+        콜론을 제거한 MAC
+        <button class="copyBtn" onclick="copyToClipboard('colonOutput')">복사</button>
+      </h3>
+      <div id="colonOutput" class="content"></div>
+    </div>
+    <div class="box no-colon">
+      <h3>
+        콜론을 추가한 MAC
+        <button class="copyBtn" onclick="copyToClipboard('noColonOutput')">복사</button>
+      </h3>
+      <div id="noColonOutput" class="content"></div>
+    </div>
+  </div>
+
+  <script>
+    function cleanMac(mac) {
+      // : 제외 모든 특수문자 -> :
+      return mac.replace(/[^A-Fa-f0-9:]/g, ':').toUpperCase();
+    }
+
+    function addColon(mac) {
+      mac = mac.replace(/[^A-F0-9]/g, '');
+      return mac.match(/.{1,2}/g)?.join(':') || '';
+    }
+
+    function removeColon(mac) {
+      return mac.replace(/:/g, '').toUpperCase();
+    }
+
+    function updateResult() {
+      const input = document.getElementById('macInput').value;
+      const rawLines = input.split(/\s+/).filter(line => line.trim() !== '');
+
+      const colonList = [];
+      const noColonList = [];
+
+      rawLines.forEach(mac => {
+        mac = cleanMac(mac);
+        if (mac.includes(':')) {
+          colonList.push(removeColon(mac));
+        } else {
+          noColonList.push(addColon(mac));
+        }
+      });
+
+      document.getElementById('colonOutput').innerText = colonList.join('\n');
+      document.getElementById('noColonOutput').innerText = noColonList.join('\n');
+    }
+
+    function copyToClipboard(id) {
+      const content = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(content).then(() => {
+        alert('복사 완료!');
+      }).catch(() => {
+        alert('복사 실패');
+      });
+    }
+
+    document.getElementById('macInput').addEventListener('input', updateResult);
+  </script>
+
+</body>
+
+</html>
